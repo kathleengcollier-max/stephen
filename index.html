@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stephen's Daily Boost</title>
+<meta name="app-version" content="1.1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23003F87'/><circle cx='50' cy='50' r='28' fill='%23FFD166'/></svg>">
+<style>
+  /* ─────────────────────────────────────────────────────────────
+     COLORS — swap these to re-theme the whole page
+     ───────────────────────────────────────────────────────────── */
+  :root{
+    --blue:#003F87;        /* Johnstone blue */
+    --red:#E4232F;         /* One Degree red */
+    --sun:#FFD166;         /* skin / highlight */
+    --sky:#DCEEFF;         /* background */
+    --floor:#002C5F;       /* stage floor */
+    --ink:#0F2A4A;
+    --paper:#FFFFFF;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:"Trebuchet MS","Segoe UI",Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    background:var(--sky);
+    display:flex;flex-direction:column;align-items:center;
+    min-height:100vh;overflow:hidden;
+  }
+  header{
+    width:100%;max-width:720px;padding:28px 20px 0;text-align:center;
+  }
+  header h1{
+    margin:0;font-size:clamp(28px,6vw,48px);letter-spacing:-.5px;color:var(--blue);
+    line-height:1.05;
+  }
+  header p{margin:6px 0 0;font-size:15px;opacity:.7}
+
+  /* stage */
+  .stage{
+    position:relative;width:100%;max-width:720px;flex:1;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+    min-height:420px;
+  }
+  .floor{
+    position:absolute;left:0;right:0;bottom:0;height:22%;
+    background:var(--floor);
+    border-radius:50% 50% 0 0 / 40px 40px 0 0;
+  }
+  .bubble{
+    position:relative;z-index:2;
+    background:var(--paper);border:3px solid var(--ink);border-radius:18px;
+    padding:14px 20px;max-width:88%;font-size:clamp(17px,3.2vw,22px);font-weight:700;
+    text-align:center;margin-bottom:18px;
+    box-shadow:6px 6px 0 var(--ink);
+    animation:pop .35s cubic-bezier(.2,1.4,.4,1);
+  }
+  .bubble::after{
+    content:"";position:absolute;left:50%;bottom:-16px;transform:translateX(-50%);
+    border:8px solid transparent;border-top:10px solid var(--ink);
+  }
+  @keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+
+  .buddy{position:relative;z-index:1;width:min(60vw,260px);margin-bottom:10%}
+  .buddy svg{width:100%;height:auto;overflow:visible;display:block}
+  .buddy .part{transform-box:view-box}
+
+  /* controls */
+  .controls{
+    position:relative;z-index:3;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;
+    padding:0 16px 28px;width:100%;max-width:720px;
+  }
+  button{
+    font:inherit;font-weight:700;font-size:16px;cursor:pointer;
+    padding:14px 22px;border-radius:999px;border:3px solid var(--ink);
+    background:var(--red);color:#fff;box-shadow:4px 4px 0 var(--ink);
+    transition:transform .08s,box-shadow .08s;
+  }
+  button.alt{background:var(--paper);color:var(--ink)}
+  button:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+  button:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+  button:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+
+  /* ─────────────────────────────────────────────────────────────
+     MOVES — each move is a set of keyframes on the body parts.
+     Parts: #body #head #armL #armR #legL #legR (origins set on the
+     <g> elements below so arms swing from the shoulder etc.)
+     ───────────────────────────────────────────────────────────── */
+
+  /* Jumping jacks */
+  .jacks #body{animation:jk-body .7s ease-in-out infinite}
+  .jacks #armL{animation:jk-armL .7s ease-in-out infinite}
+  .jacks #armR{animation:jk-armR .7s ease-in-out infinite}
+  .jacks #legL{animation:jk-legL .7s ease-in-out infinite}
+  .jacks #legR{animation:jk-legR .7s ease-in-out infinite}
+  @keyframes jk-body{0%,100%{transform:translateY(0)}50%{transform:translateY(-22px)}}
+  @keyframes jk-armL{0%,100%{transform:rotate(10deg)}50%{transform:rotate(165deg)}}
+  @keyframes jk-armR{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(-165deg)}}
+  @keyframes jk-legL{0%,100%{transform:rotate(0)}50%{transform:rotate(28deg)}}
+  @keyframes jk-legR{0%,100%{transform:rotate(0)}50%{transform:rotate(-28deg)}}
+
+  /* Victory dance */
+  .dance #body{animation:dn-body .8s ease-in-out infinite}
+  .dance #head{animation:dn-head .8s ease-in-out infinite}
+  .dance #armL{animation:dn-armL .8s ease-in-out infinite}
+  .dance #armR{animation:dn-armR .8s ease-in-out infinite}
+  .dance #legL{animation:dn-legL .8s ease-in-out infinite}
+  .dance #legR{animation:dn-legR .8s ease-in-out infinite}
+  @keyframes dn-body{0%,100%{transform:translateY(0) rotate(-6deg)}25%,75%{transform:translateY(-10px) rotate(0)}50%{transform:translateY(0) rotate(6deg)}}
+  @keyframes dn-head{0%,100%{transform:rotate(12deg)}50%{transform:rotate(-12deg)}}
+  @keyframes dn-armL{0%,100%{transform:rotate(150deg)}50%{transform:rotate(40deg)}}
+  @keyframes dn-armR{0%,100%{transform:rotate(-40deg)}50%{transform:rotate(-150deg)}}
+  @keyframes dn-legL{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(15deg)}}
+  @keyframes dn-legR{0%,100%{transform:rotate(-15deg)}50%{transform:rotate(10deg)}}
+
+  /* Big wave */
+  .wave #body{animation:wv-body 1.2s ease-in-out infinite}
+  .wave #armR{animation:wv-armR .5s ease-in-out infinite}
+  .wave #armL{transform:rotate(12deg)}
+  .wave #head{animation:wv-head 1.2s ease-in-out infinite}
+  @keyframes wv-body{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+  @keyframes wv-armR{0%,100%{transform:rotate(-145deg)}50%{transform:rotate(-185deg)}}
+  @keyframes wv-head{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+
+  /* Moonwalk */
+  .moon .buddy-wrap{animation:mw-slide 3s ease-in-out infinite}
+  .moon #body{animation:mw-body .6s ease-in-out infinite}
+  .moon #head{transform:rotate(-14deg)}
+  .moon #armL{animation:mw-armL .6s ease-in-out infinite}
+  .moon #armR{animation:mw-armR .6s ease-in-out infinite}
+  .moon #legL{animation:mw-legL .6s ease-in-out infinite}
+  .moon #legR{animation:mw-legR .6s ease-in-out infinite}
+  @keyframes mw-slide{0%,100%{transform:translateX(70px)}50%{transform:translateX(-70px)}}
+  @keyframes mw-body{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-3px) rotate(-6deg)}}
+  @keyframes mw-armL{0%,100%{transform:rotate(30deg)}50%{transform:rotate(-20deg)}}
+  @keyframes mw-armR{0%,100%{transform:rotate(-30deg)}50%{transform:rotate(20deg)}}
+  @keyframes mw-legL{0%,100%{transform:rotate(22deg)}50%{transform:rotate(-22deg)}}
+  @keyframes mw-legR{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(22deg)}}
+
+  /* confetti */
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:9;overflow:hidden}
+  .confetti i{
+    position:absolute;top:-20px;width:10px;height:16px;border-radius:2px;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.9}}
+
+  @media (prefers-reduced-motion:reduce){
+    .buddy [id]{animation-duration:3s !important}
+    .confetti{display:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 id="title">Hey Stephen.</h1>
+  <p id="sub">Somebody thought you could use this today.</p>
+</header>
+
+<section class="stage" id="stage">
+  <div class="floor"></div>
+  <div class="bubble" id="bubble">Loading a good one…</div>
+  <div class="buddy-wrap">
+    <div class="buddy" aria-hidden="true">
+      <svg viewBox="0 0 200 270" xmlns="http://www.w3.org/2000/svg">
+        <g id="body" class="part" style="transform-origin:100px 150px">
+          <!-- legs (behind torso) -->
+          <g id="legL" class="part" style="transform-origin:87px 150px">
+            <rect x="79" y="148" width="16" height="78" rx="8" fill="var(--blue)"/>
+            <rect x="74" y="218" width="28" height="14" rx="7" fill="var(--ink)"/>
+          </g>
+          <g id="legR" class="part" style="transform-origin:113px 150px">
+            <rect x="105" y="148" width="16" height="78" rx="8" fill="var(--blue)"/>
+            <rect x="98" y="218" width="28" height="14" rx="7" fill="var(--ink)"/>
+          </g>
+          <!-- torso: red shirt with a little One Degree stripe -->
+          <rect x="72" y="80" width="56" height="76" rx="14" fill="var(--red)"/>
+          <rect x="72" y="118" width="56" height="8" fill="#fff" opacity=".9"/>
+          <!-- arms (drawn over the torso so they never hide behind it) -->
+          <g id="armL" class="part" style="transform-origin:70px 92px">
+            <rect x="62" y="84" width="16" height="72" rx="8" fill="var(--red)"/>
+            <circle cx="70" cy="156" r="9" fill="var(--sun)"/>
+          </g>
+          <g id="armR" class="part" style="transform-origin:130px 92px">
+            <rect x="122" y="84" width="16" height="72" rx="8" fill="var(--red)"/>
+            <circle cx="130" cy="156" r="9" fill="var(--sun)"/>
+          </g>
+          <!-- head -->
+          <g id="head" class="part" style="transform-origin:100px 80px">
+            <rect x="93" y="70" width="14" height="14" fill="var(--sun)"/>
+            <circle cx="100" cy="48" r="30" fill="var(--sun)"/>
+            <!-- hair -->
+            <path d="M70 44 Q80 14 100 18 Q120 14 130 44 Q118 32 100 30 Q82 32 70 44Z" fill="#E8B84A"/>
+            <!-- eyes -->
+            <circle cx="89" cy="48" r="3.5" fill="var(--ink)"/>
+            <circle cx="111" cy="48" r="3.5" fill="var(--ink)"/>
+            <!-- glasses -->
+            <g fill="none" stroke="var(--ink)" stroke-width="2.5">
+              <circle cx="89" cy="48" r="8"/>
+              <circle cx="111" cy="48" r="8"/>
+              <path d="M97 48 L103 48 M81 46 L72 43 M119 46 L128 43"/>
+            </g>
+            <!-- grin -->
+            <path d="M86 58 Q100 72 114 58" stroke="var(--ink)" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+            <!-- cheeks -->
+            <circle cx="82" cy="58" r="4" fill="var(--red)" opacity=".35"/>
+            <circle cx="118" cy="58" r="4" fill="var(--red)" opacity=".35"/>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<div class="controls">
+  <button id="btnMove">Do another move</button>
+  <button id="btnParty" class="alt">Confetti, please</button>
+</div>
+
+<div class="confetti" id="confetti"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   EDIT ZONE — everything you'd want to change lives here.
+   Push a new index.html to GitHub and Vercel redeploys it.
+   ═══════════════════════════════════════════════════════════════ */
+
+// Who this page is for. Change the name and the page follows.
+const NAME = "Stephen";
+
+// One message shows at random each time the page loads.
+// Keep one line here for a single fixed message, or several to rotate by visit.
+const MESSAGES = [
+  "Rough day? Fine. But you're still the guy people go to when it actually matters.",
+  "Reminder: nobody has ever regretted a jumping jack.",
+  "You've survived 100% of your worst days so far. Solid track record.",
+  "Today is just one page. The book's good.",
+  "The team is better with you in it. That's not a pep talk, that's a headcount fact.",
+  "Whatever it is, it'll look smaller from Friday.",
+  "Somebody in this building is glad you showed up today. Several somebodies, honestly.",
+  "Go get a coffee. This little guy will keep going while you're gone.",
+  "One degree makes the difference. Today you're the degree.",
+];
+
+// Moves cycle on load and on "Do another move."
+// Options: "jacks", "dance", "wave", "moon"
+const MOVES = ["jacks", "dance", "wave", "moon"];
+
+// Optional: a message for a specific date (YYYY-MM-DD). Shows instead of the
+// random rotation on that day. Handy for birthdays or "you closed the deal."
+const DATED = {
+  // "2026-09-16": "Yesterday was yesterday. New day, new jacks.",
+};
+
+/* ═══════════════════════════════════════════════════════════════ */
+
+const stage = document.getElementById("stage");
+const bubble = document.getElementById("bubble");
+document.getElementById("title").textContent = "Hey " + NAME + ".";
+
+const url = new URLSearchParams(location.search);
+let moveIdx = Math.floor(Math.random() * MOVES.length);
+let msgIdx  = Math.floor(Math.random() * MESSAGES.length);
+
+function setMove(name){
+  stage.classList.remove(...MOVES);
+  // restart animations cleanly
+  void stage.offsetWidth;
+  stage.classList.add(name);
+}
+function setMessage(text){
+  bubble.style.animation = "none";
+  void bubble.offsetWidth;
+  bubble.style.animation = "";
+  bubble.textContent = text;
+}
+function nextMove(){ moveIdx = (moveIdx + 1) % MOVES.length; setMove(MOVES[moveIdx]); }
+
+function confetti(n = 90){
+  const box = document.getElementById("confetti");
+  const colors = ["#E4232F","#003F87","#FFD166","#FFFFFF","#6EC6FF"];
+  for (let i = 0; i < n; i++){
+    const c = document.createElement("i");
+    c.style.left = Math.random()*100 + "vw";
+    c.style.background = colors[i % colors.length];
+    c.style.animationDuration = (2 + Math.random()*2) + "s";
+    c.style.animationDelay = Math.random()*0.6 + "s";
+    c.style.transform = "rotate(" + Math.random()*360 + "deg)";
+    box.appendChild(c);
+    setTimeout(() => c.remove(), 5000);
+  }
+}
+
+// Initial state: URL params win (?move=wave&msg=Hello%20Stephen), then dated, then random
+const today = new Date().toISOString().slice(0,10);
+if (url.get("move") && MOVES.includes(url.get("move"))) moveIdx = MOVES.indexOf(url.get("move"));
+setMove(MOVES[moveIdx]);
+if (url.get("msg")) setMessage(url.get("msg"));
+else if (DATED[today]) setMessage(DATED[today]);
+else setMessage(MESSAGES[msgIdx]);
+
+document.getElementById("btnMove").addEventListener("click", nextMove);
+document.getElementById("btnParty").addEventListener("click", () => confetti());
+document.addEventListener("keydown", e => {
+  if (e.code === "Space") { e.preventDefault(); nextMove(); }
+});
+</script>
+</body>
+</html>
