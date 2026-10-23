@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Stephen's Daily Boost</title>
-<meta name="app-version" content="1.5">
+<meta name="app-version" content="2.1">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23003F87'/><circle cx='50' cy='50' r='28' fill='%23FFD166'/></svg>">
@@ -15,7 +15,11 @@
     --blue:#003F87;        /* Johnstone blue */
     --red:#E4232F;         /* One Degree red */
     --sun:#FFD166;         /* skin / highlight */
-    --sky:#DCEEFF;         /* background */
+    --sky:#FFD9A8;         /* background (fall edition) */
+    --sky2:#FFB36B;
+    --turf:#2E7D32;
+    --turf2:#276B2B;
+    --leaf1:#E4572E; --leaf2:#F3A712; --leaf3:#A4451B;
     --floor:#002C5F;       /* stage floor */
     --ink:#0F2A4A;
     --paper:#FFFFFF;
@@ -25,7 +29,7 @@
   body{
     font-family:"Trebuchet MS","Segoe UI",Helvetica,Arial,sans-serif;
     color:var(--ink);
-    background:var(--sky);
+    background:linear-gradient(180deg,var(--sky) 0%,var(--sky2) 100%);
     display:flex;flex-direction:column;align-items:center;
     min-height:100vh;overflow:hidden;
   }
@@ -36,7 +40,8 @@
     margin:0;font-size:clamp(28px,6vw,48px);letter-spacing:-.5px;color:var(--blue);
     line-height:1.05;
   }
-  header p{margin:6px 0 0;font-size:15px;opacity:.7}
+  header p{margin:6px 0 0;font-size:15px;opacity:.75}
+  .pennant{display:inline-block;margin-top:10px;padding:5px 14px;background:var(--blue);color:#fff;font-weight:800;font-size:12px;letter-spacing:2px;border-radius:4px;transform:rotate(-2deg);box-shadow:3px 3px 0 var(--ink)}
 
   /* stage */
   .stage{
@@ -44,11 +49,31 @@
     display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
     min-height:420px;
   }
+  /* the stage is now a football field: turf stripes + yard lines */
   .floor{
     position:absolute;left:0;right:0;bottom:0;height:22%;
-    background:var(--floor);
+    background:
+      repeating-linear-gradient(90deg,transparent 0 60px,rgba(255,255,255,.85) 60px 63px),
+      repeating-linear-gradient(90deg,var(--turf) 0 126px,var(--turf2) 126px 252px);
+    border-top:4px solid #fff;
     border-radius:50% 50% 0 0 / 40px 40px 0 0;
+    overflow:hidden;
   }
+  .floor::after{ /* hash marks */
+    content:"";position:absolute;left:0;right:0;top:34%;height:10px;
+    background:repeating-linear-gradient(90deg,transparent 0 24px,rgba(255,255,255,.6) 24px 27px);
+  }
+  /* drifting fall leaves */
+  .leaves{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .leaves svg{position:absolute;top:-40px;width:22px;height:22px;animation:leaf linear infinite;opacity:.9}
+  @keyframes leaf{
+    0%{transform:translate(0,0) rotate(0deg)}
+    25%{transform:translate(30px,25vh) rotate(90deg)}
+    50%{transform:translate(-20px,50vh) rotate(200deg)}
+    75%{transform:translate(25px,75vh) rotate(300deg)}
+    100%{transform:translate(-10px,105vh) rotate(420deg)}
+  }
+  .stage,header,.controls{position:relative;z-index:1}
   .bubble{
     position:relative;z-index:2;
     background:var(--paper);border:3px solid var(--ink);border-radius:18px;
@@ -139,6 +164,106 @@
   @keyframes mw-legL{0%,100%{transform:rotate(22deg)}50%{transform:rotate(-22deg)}}
   @keyframes mw-legR{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(22deg)}}
 
+
+  /* Stroller dance — pushing the little guy along */
+  #stroller{opacity:0;transition:opacity .2s}
+  .stroller #stroller{opacity:1}
+  .stroller .buddy-wrap{transform:translateX(-45px);animation:st-slide 4s ease-in-out infinite}
+  .stroller #body{animation:st-body .6s ease-in-out infinite}
+  .stroller #head{animation:st-head 1.2s ease-in-out infinite}
+  .stroller #armL{transform:rotate(-40deg)}
+  .stroller #armR{transform:rotate(-60deg)}
+  .stroller #legL{animation:st-legL .6s ease-in-out infinite}
+  .stroller #legR{animation:st-legR .6s ease-in-out infinite}
+  .stroller #wheelA,.stroller #wheelB{animation:st-wheel 1.2s linear infinite}
+  .stroller #baby{animation:st-baby .6s ease-in-out infinite}
+  .stroller #babyArm{animation:st-babyArm .6s ease-in-out infinite}
+  @keyframes st-slide{0%,100%{transform:translateX(-75px)}50%{transform:translateX(-15px)}}
+  @keyframes st-body{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-8px) rotate(3deg)}}
+  @keyframes st-head{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+  @keyframes st-legL{0%,100%{transform:rotate(22deg)}50%{transform:rotate(-22deg)}}
+  @keyframes st-legR{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(22deg)}}
+  @keyframes st-wheel{to{transform:rotate(360deg)}}
+  @keyframes st-baby{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-4px) rotate(4deg)}}
+  @keyframes st-babyArm{0%,100%{transform:rotate(-150deg)}50%{transform:rotate(-120deg)}}
+
+
+  /* ── Football moves ── */
+  #ball{opacity:0}
+  .throw #ball,.kick #ball,.touchdown #ball{opacity:1}
+
+  /* QB throw: wind up, let it fly, ball arcs off the right */
+  .throw #body{animation:th-body 2s ease-in-out infinite}
+  .throw #armR{animation:th-armR 2s ease-in-out infinite}
+  .throw #armL{animation:th-armL 2s ease-in-out infinite}
+  .throw #legL{transform:rotate(18deg)}
+  .throw #legR{transform:rotate(-12deg)}
+  .throw #head{animation:th-head 2s ease-in-out infinite}
+  .throw #ball{animation:th-ball 2s ease-in-out infinite}
+  @keyframes th-body{0%,35%{transform:rotate(8deg)}50%,100%{transform:rotate(-6deg)}}
+  @keyframes th-head{0%,35%{transform:rotate(10deg)}50%,100%{transform:rotate(-6deg)}}
+  @keyframes th-armR{0%{transform:rotate(-120deg)}35%{transform:rotate(-215deg)}50%,100%{transform:rotate(-70deg)}}
+  @keyframes th-armL{0%,35%{transform:rotate(-70deg)}50%,100%{transform:rotate(-120deg)}}
+  @keyframes th-ball{
+    0%,35%{transform:translate(-8px,-170px) rotate(-20deg);opacity:1}
+    50%{transform:translate(120px,-240px) rotate(60deg);opacity:1}
+    85%{transform:translate(330px,-120px) rotate(400deg);opacity:1}
+    86%,100%{transform:translate(330px,-120px);opacity:0}
+  }
+
+  /* Field goal: plant, swing the leg, ball sails */
+  .kick #body{animation:kk-body 1.8s ease-in-out infinite}
+  .kick #legR{animation:kk-legR 1.8s ease-in-out infinite}
+  .kick #legL{transform:rotate(10deg)}
+  .kick #armL{animation:kk-armL 1.8s ease-in-out infinite}
+  .kick #armR{animation:kk-armR 1.8s ease-in-out infinite}
+  .kick #ball{animation:kk-ball 1.8s ease-in-out infinite}
+  @keyframes kk-body{0%,30%{transform:translateY(0) rotate(4deg)}45%{transform:translateY(-6px) rotate(-10deg)}70%,100%{transform:translateY(0) rotate(0)}}
+  @keyframes kk-legR{0%,30%{transform:rotate(-70deg)}45%{transform:rotate(60deg)}70%,100%{transform:rotate(0)}}
+  @keyframes kk-armL{0%,30%{transform:rotate(-30deg)}45%{transform:rotate(60deg)}70%,100%{transform:rotate(10deg)}}
+  @keyframes kk-armR{0%,30%{transform:rotate(60deg)}45%{transform:rotate(-80deg)}70%,100%{transform:rotate(-10deg)}}
+  @keyframes kk-ball{
+    0%,42%{transform:translate(105px,0) rotate(0);opacity:1}
+    60%{transform:translate(220px,-200px) rotate(300deg);opacity:1}
+    80%{transform:translate(380px,-60px) rotate(600deg);opacity:1}
+    81%,100%{transform:translate(380px,-60px);opacity:0}
+  }
+
+  /* Touchdown: ball on the turf, arms up, bounce, kick the feet */
+  .touchdown #body{animation:td-body .5s ease-in-out infinite}
+  .touchdown #armL{animation:td-armL .5s ease-in-out infinite}
+  .touchdown #armR{animation:td-armR .5s ease-in-out infinite}
+  .touchdown #legL{animation:td-legL .5s ease-in-out infinite}
+  .touchdown #legR{animation:td-legR .5s ease-in-out infinite}
+  .touchdown #head{animation:td-head 1s ease-in-out infinite}
+  .touchdown #ball{animation:td-ball .5s ease-in-out infinite}
+  @keyframes td-body{0%,100%{transform:translateY(0)}50%{transform:translateY(-26px)}}
+  @keyframes td-armL{0%,100%{transform:rotate(150deg)}50%{transform:rotate(175deg)}}
+  @keyframes td-armR{0%,100%{transform:rotate(-150deg)}50%{transform:rotate(-175deg)}}
+  @keyframes td-legL{0%,100%{transform:rotate(0)}50%{transform:rotate(-30deg)}}
+  @keyframes td-legR{0%,100%{transform:rotate(0)}50%{transform:rotate(30deg)}}
+  @keyframes td-head{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}}
+  @keyframes td-ball{0%,100%{transform:translateY(0) rotate(-10deg)}50%{transform:translateY(-14px) rotate(10deg)}}
+
+
+  /* Cradle: holding the little guy, swaying side to side */
+  #held{opacity:0}
+  .cradle #held{opacity:1}
+  .cradle #body{animation:cr-body 1.6s ease-in-out infinite}
+  .cradle #head{animation:cr-head 1.6s ease-in-out infinite}
+  .cradle #armL{animation:cr-armL 1.6s ease-in-out infinite}
+  .cradle #armR{animation:cr-armR 1.6s ease-in-out infinite}
+  .cradle #held{animation:cr-held 1.6s ease-in-out infinite}
+  .cradle #legL{animation:cr-legL 1.6s ease-in-out infinite}
+  .cradle #legR{animation:cr-legR 1.6s ease-in-out infinite}
+  @keyframes cr-body{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-4px) rotate(5deg)}}
+  @keyframes cr-head{0%,100%{transform:rotate(10deg)}50%{transform:rotate(-6deg)}}
+  @keyframes cr-armL{0%,100%{transform:rotate(-58deg)}50%{transform:rotate(-50deg)}}
+  @keyframes cr-armR{0%,100%{transform:rotate(50deg)}50%{transform:rotate(58deg)}}
+  @keyframes cr-held{0%,100%{transform:translate(-4px,0) rotate(-3deg)}50%{transform:translate(4px,-2px) rotate(3deg)}}
+  @keyframes cr-legL{0%,100%{transform:rotate(6deg)}50%{transform:rotate(-4deg)}}
+  @keyframes cr-legR{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-6deg)}}
+
   /* confetti */
   .confetti{position:fixed;inset:0;pointer-events:none;z-index:9;overflow:hidden}
   .confetti i{
@@ -158,6 +283,7 @@
 <header>
   <h1 id="title">Hey Stephen.</h1>
   <p id="sub">I just wanted you to know....</p>
+  <span class="pennant">FALL EDITION · GAME DAY</span>
 </header>
 
 <section class="stage" id="stage">
@@ -179,6 +305,7 @@
           <!-- torso: red shirt with a little One Degree stripe -->
           <rect x="72" y="80" width="56" height="76" rx="14" fill="var(--red)"/>
           <rect x="72" y="118" width="56" height="8" fill="#fff" opacity=".9"/>
+          <text x="100" y="112" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="26" fill="#fff">1</text>
           <!-- arms (drawn over the torso so they never hide behind it) -->
           <g id="armL" class="part" style="transform-origin:70px 92px">
             <rect x="62" y="84" width="16" height="72" rx="8" fill="var(--red)"/>
@@ -187,6 +314,15 @@
           <g id="armR" class="part" style="transform-origin:130px 92px">
             <rect x="122" y="84" width="16" height="72" rx="8" fill="var(--red)"/>
             <circle cx="130" cy="156" r="9" fill="var(--sun)"/>
+          </g>
+          <!-- baby held in his arms (only visible in the "cradle" move) -->
+          <g id="held" class="part" style="transform-origin:100px 140px">
+            <rect x="78" y="128" width="44" height="26" rx="13" fill="#6EC6FF"/>
+            <circle cx="120" cy="134" r="12" fill="var(--sun)"/>
+            <path d="M108 132 Q120 118 132 132 Z" fill="#6EC6FF"/>
+            <circle cx="116" cy="134" r="1.8" fill="var(--ink)"/><circle cx="124" cy="134" r="1.8" fill="var(--ink)"/>
+            <path d="M115 139 Q120 144 125 139" stroke="var(--ink)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            <circle cx="82" cy="150" r="5" fill="var(--sun)"/>
           </g>
           <!-- head -->
           <g id="head" class="part" style="transform-origin:100px 80px">
@@ -208,7 +344,38 @@
             <!-- cheeks -->
             <circle cx="82" cy="58" r="4" fill="var(--red)" opacity=".35"/>
             <circle cx="118" cy="58" r="4" fill="var(--red)" opacity=".35"/>
+          <!-- stroller + baby boy (only visible during the "stroller" move) -->
+          <g id="stroller">
+            <path d="M118 146 Q160 116 204 108" stroke="var(--ink)" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <path d="M204 108 L214 150" stroke="var(--ink)" stroke-width="6" stroke-linecap="round"/>
+            <path d="M196 160 Q196 140 216 140 L268 140 Q280 140 280 152 L280 178 Q280 194 264 194 L212 194 Q196 194 196 178 Z" fill="var(--blue)"/>
+            <path d="M212 140 Q214 108 244 104 Q274 104 276 140 Z" fill="var(--red)"/>
+            <path d="M196 194 L206 216 M280 194 L270 216" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>
+            <g id="wheelA" class="part" style="transform-origin:208px 220px">
+              <circle cx="208" cy="220" r="12" fill="var(--ink)"/><circle cx="208" cy="220" r="4" fill="#fff"/>
+              <path d="M208 208 V232 M196 220 H220" stroke="#fff" stroke-width="2"/>
+            </g>
+            <g id="wheelB" class="part" style="transform-origin:268px 220px">
+              <circle cx="268" cy="220" r="12" fill="var(--ink)"/><circle cx="268" cy="220" r="4" fill="#fff"/>
+              <path d="M268 208 V232 M256 220 H280" stroke="#fff" stroke-width="2"/>
+            </g>
+            <g id="baby" class="part" style="transform-origin:238px 150px">
+              <rect x="228" y="138" width="24" height="18" rx="8" fill="#6EC6FF"/>
+              <circle cx="240" cy="128" r="12" fill="var(--sun)"/>
+              <path d="M228 126 Q240 112 252 126 Z" fill="#6EC6FF"/>
+              <circle cx="236" cy="128" r="1.8" fill="var(--ink)"/><circle cx="244" cy="128" r="1.8" fill="var(--ink)"/>
+              <path d="M235 133 Q240 138 245 133" stroke="var(--ink)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+              <g id="babyArm" class="part" style="transform-origin:253px 142px">
+                <rect x="250" y="130" width="7" height="16" rx="3.5" fill="var(--sun)"/>
+              </g>
+            </g>
           </g>
+          </g>
+        </g>
+        <!-- football (only visible in the football moves) -->
+        <g id="ball" class="part" style="transform-origin:40px 220px">
+          <ellipse cx="40" cy="220" rx="18" ry="11" fill="#8B4A1E" stroke="var(--ink)" stroke-width="2"/>
+          <path d="M31 220 H49 M35 216 V224 M40 216 V224 M45 216 V224" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
         </g>
       </svg>
     </div>
@@ -220,6 +387,7 @@
   <button id="btnParty" class="alt">Confetti, please</button>
 </div>
 
+<div class="leaves" id="leaves"></div>
 <div class="confetti" id="confetti"></div>
 
 <script>
@@ -234,12 +402,12 @@ const NAME = "Stephen";
 // One message shows at random each time the page loads.
 // Keep one line here for a single fixed message, or several to rotate by visit.
 const MESSAGES = [
-  "It may not always feel like it, but you're GREAT! Everybody here already knows it. You have made us the BEST in the WEST!",
+  "You carry a lot, and you carry it well. Be as patient with yourself as you are with the little guy. We're lucky to have you.",
 ];
 
 // Moves cycle on load and on "Do another move."
-// Options: "jacks", "dance", "wave", "moon"
-const MOVES = ["jacks", "dance", "wave", "moon"];
+// Options: "cradle", "touchdown", "throw", "kick", "jacks", "dance", "wave", "moon", "stroller"
+const MOVES = ["cradle", "touchdown", "throw", "kick", "jacks", "dance", "wave", "moon", "stroller"];
 
 // Optional: a message for a specific date (YYYY-MM-DD). Shows instead of the
 // random rotation on that day. Handy for birthdays or "you closed the deal."
@@ -273,7 +441,7 @@ function nextMove(){ moveIdx = (moveIdx + 1) % MOVES.length; setMove(MOVES[moveI
 
 function confetti(n = 90){
   const box = document.getElementById("confetti");
-  const colors = ["#E4232F","#003F87","#FFD166","#FFFFFF","#6EC6FF"];
+  const colors = ["#E4572E","#F3A712","#A4451B","#8B4A1E","#FFD166","#003F87"];
   for (let i = 0; i < n; i++){
     const c = document.createElement("i");
     c.style.left = Math.random()*100 + "vw";
@@ -293,6 +461,23 @@ setMove(MOVES[moveIdx]);
 if (url.get("msg")) setMessage(url.get("msg"));
 else if (DATED[today]) setMessage(DATED[today]);
 else setMessage(MESSAGES[msgIdx]);
+
+
+// Drifting fall leaves — set LEAF_COUNT to 0 to turn them off
+const LEAF_COUNT = 14;
+(function leaves(){
+  const box = document.getElementById("leaves");
+  const cols = ["var(--leaf1)","var(--leaf2)","var(--leaf3)"];
+  for (let i = 0; i < LEAF_COUNT; i++){
+    const l = document.createElementNS("http://www.w3.org/2000/svg","svg");
+    l.setAttribute("viewBox","0 0 24 24");
+    l.innerHTML = '<path d="M12 2 C4 6 2 14 3 21 C10 20 18 16 21 4 Z" fill="'+cols[i%3]+'"/><path d="M4 20 L18 6" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/>';
+    l.style.left = Math.random()*100 + "vw";
+    l.style.animationDuration = (9 + Math.random()*9) + "s";
+    l.style.animationDelay = (-Math.random()*18) + "s";
+    box.appendChild(l);
+  }
+})();
 
 document.getElementById("btnMove").addEventListener("click", nextMove);
 document.getElementById("btnParty").addEventListener("click", () => confetti());
